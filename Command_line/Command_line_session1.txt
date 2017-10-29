@@ -1,0 +1,188 @@
+   984	echo Session 1 Command line
+   985	echo Command line enviroment: the Linux distribution contains a Linux kernel+additional tools. In this case the distribution is Fedora. Lets check the distribution
+   986	cat /etc/os-release
+   987	echo Now lets investigate the Kernel
+   988	uname -r
+   989	dnf list kernel
+   990	echo The Terminal is the app where we type the commands 
+   991	echo $TERM
+   992	echo In this case this Terminal allows 256 colors. 
+   993	echo Finally, the shell is the app that interprets the commands from the Terminal and sends the instructions to the Kernel
+   994	echo $0
+   995	echo We are using the shell zsh, but there are plenty more. We can list them
+   996	chsh -l
+   997	echo And we can change from one to other just writing the name of the shell
+   998	bash
+   999	echo Now, we are in the shell called bash, that is the most common in every Linux distribution. However, we are just executing bash from zsh, in order to really change them, we need the command chsh
+  1000	exit
+  1001	chsh -s bash
+  1002	chsh -s /bin/bash
+  1003	echo $0
+  1004	chsh -s /bin/bash/
+  1005	chsh -s /bin/bash
+  1006	echo $0
+  1007	chsh .l
+  1008	chsh -l
+  1009	chsh -s /usr/bin/bash
+  1010	echo $0
+  1011	chsh -s /usr/bin/zsh
+  1012	echo $0
+  1013	chsh -s /bin/bash
+  1014	echo $0
+  1015	chsh -s /bin/zsh
+  1016	echo In the command line enviroment, we can find which user is activated
+  1017	who
+  1018	whoami
+  1019	echo pwd gives the name of the current directory
+  1020	pwd
+  1021	echo it can be called from "echo" using $PWD
+  1022	echo cat displays in the terminal the contents of any file
+  1023	cd Data/shell
+  1024	cat Text_example.txt
+  1025	cat -n Text_example.txt
+  1026	echo As you could see before, to change between directories, we use cd, that stands for 'change directory'
+  1027	cd 
+  1028	cd /
+  1029	cd /home/dsc
+  1030	cd ../
+  1031	cd ~
+  1032	cd -
+  1033	echo File utilities: this tools are useful for navigate and get information from the files
+  1034	echo The first one is the list command ls
+  1035	ls
+  1036	ls -l
+  1037	ls -1
+  1038	ls -s
+  1039	ls -1s
+  1040	ls -1 -s
+  1041	ls -1s
+  1042	ls -s1
+  1043	ls -lH
+  1044	ls -lsS
+  1045	echo For the hidden directories:
+  1046	ls -a
+  1047	echo All the hidden directories start with a dot
+  1048	ls -l .zshrc
+  1049	echo We can see here first the file permissons (for user, group and others), the number of links, the owner name, the owner group, the file size, the date of last modification, and the file name
+  1050	echo for sorting the list by size we will use -S, -t by modification time and -X alphabetically
+  1051	ls -lX
+  1052	ls -rX
+  1053	ls -S
+  1054	ls -sS
+  1055	echo chmod is used for changing the permissons of the files
+  1056	ls -l
+  1057	cd Data/shell
+  1058	ls -l
+  1059	chmod g-x,o-x Finn.txt
+  1060	ls -l
+  1061	echo we can create empty directories with mkdir and empty files with touch
+  1062	mkdir one
+  1063	mkdir one/two/three
+  1064	mkdir -p one/two/three
+  1065	touch file.txt
+  1066	ls -l
+  1067	echo with cp and move we can copy and move the files
+  1068	cd one
+  1069	cp -r two/ two_copy/
+  1070	ls
+  1071	cp ../file.txt ../one/file_copy.txt
+  1072	ls
+  1073	mv file_copy.txt file_original.txt
+  1074	ls
+  1075	mv file_original.txt two
+  1076	ls -l two
+  1077	echo the remove command is rm
+  1078	rm -i two_copy
+  1079	rm -ri two_copy
+  1080	ls
+  1081	echo For adding content to a file, we can use a text processor like kwrite or emacs
+  1082	cd two
+  1083	kwrite file_original.txt
+  1084	emacs file_original.txt
+  1085	cd ..
+  1086	ls
+  1087	rm one/
+  1088	rm -ri one/
+  1089	cd ~
+  1090	ls
+  1091	rm -ir first_dir
+  1092	echo File utilities: exercises
+  1093	echo 1
+  1094	mkdir first_dir
+  1095	ls
+  1096	echo 2
+  1097	touch first_dir/text_file.txt
+  1098	ls -l first_dir
+  1099	echo 3
+  1100	chmod g+x,o+w first_dir/text_file.txt
+  1101	ls -l first_dir
+  1102	echo 4
+  1103	mkdir first_dir/sub1
+  1104	mkdir first_dir/sub2
+  1105	mkdir first_dir/sub3
+  1106	mkdir first_dir/text_file
+  1107	echo 5
+  1108	cp first_dir/text_file.txt first_dir/sub1
+  1109	ls -l first_dir/sub1
+  1110	echo 6
+  1111	mv first_dir/text_file.txt first_dir/sub2/text_file.txt.2
+  1112	cp -r first_dir/sub1 first_dir/sub3
+  1113	tree first_dir
+  1114	mv first_dir/sub3/sub1/text_file.txt first_dir/sub3/text_file.txt.backup
+  1115	chmod 777 first_dir/sub3/text_file.txt.backup
+  1116	ls -l first_dir/sub3/text_file.txt.backup
+  1117	mv first_dir/sub3/text_file.txt.backup first_dir/.text_file.txt.backup
+  1118	ls -l first_dir
+  1119	ls -la fi
+  1120	ls -la first_dir
+  1121	rm first_dir
+  1122	rm -r first_dir
+  1123	echo End of the exercises
+  1124	echo Second set of exercises for File utilities
+  1125	ls
+  1126	cd Data/shell
+  1127	ls
+  1128	rm Text_example_double.txt
+  1129	cat -n Text_example.txt > Text_example_w_lines.txt
+  1130	cat Text_example_w_lines.txt
+  1131	cat Text_example.txt >Text_example_double.txt
+  1132	cat Text_example.txt >>Text_example_double.txt
+  1133	cat Text_example_double.txt
+  1134	echo End of the review of File utilities
+  1135	echo Content utilities: allow us to get information from the files
+  1136	echo The most basic one is cat
+  1137	echo wc print the number of lines, words and bytes for a specific file
+  1138	cat Text_example.txt| wc
+  1139	cat Text_example.txt| wc -l
+  1140	wc Text_example.txt
+  1141	echo head shows the first lines of file. If we add -n, it prints the first K lines, when K is negative, it prints all except the last K lines
+  1142	cd Data
+  1143	cd ..
+  1144	cd opentraveldata
+  1145	head -c 1K optd_aircraft.csv|wc
+  1146	head -n optd_aircraft.csv|wc
+  1147	head -n 3 optd_aircraft.csv|wc
+  1148	head -n 3 optd_aircraft.csv
+  1149	head -n -450 optd_aircraft.csv
+  1150	echo tail shows the last lines of the file. If we add -n K, it diplays the last K lines, when +K is used, it starts with the Kth line
+  1151	tail -3 optd_aircraft.csv
+  1152	tail -n -1 optd_aircraft.csv optd_airlines.csv optd_por_public.csv
+  1153	cat -n optd_aircraft.csv | tail -n +450
+  1154	echo less show the contents of a file interactively. G/g allows to go to the end/beginning of the file
+  1155	cd ..
+  1156	cd shell
+  1157	less Finn.txt
+  1158	echo Exercise for Content utilities
+  1159	cat Text_example.txt
+  1160	tail -n +2 | head -n -3 |cat
+  1161	cat Text_example.txt | tail -n +2 | head -n -3
+  1162	cat Text_example.txt | tail -n +3 | head -n -3
+  1163	less Finn.txt
+  1164	cd ../opentraveldata
+  1165	less optd_aircraft.csv
+  1166	wc -l optd_aircraft.csv
+  1167	man tree
+  1168	tree -L
+  1169	tree -L ~
+  1170	tree ~ -L 2
+  1171	echo End of session 1 of Command line
