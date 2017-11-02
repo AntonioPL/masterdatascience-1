@@ -1,0 +1,342 @@
+echo Data science with the command line session 2
+echo In the last session, we reviewed how a Linux distribution works, some commands for knowing and setting our enviroment (who, whoami,pwd,cd), some file utilities (mkdir, touch, cp, mv, rm, ls,chmod) ;
+echo In the last session, we reviewed how a Linux distribution works, some commands for knowing and setting our enviroment (who, whoami,pwd,cd), some file utilities (mkdir, touch, cp, mv, rm, ls,chmod)
+and some content utilities, such as echo, cat,wc,head, tails and less
+echo In this session we will review the tools in the command line for sorting, counting and filtering the different items in a file. Also, we will review some tools to compress files, and to treat csv extensions.
+echo In the last point, we will creat our first shell script
+echo Sorting and counting utilities
+okular Downloads/Master_class_02.pdf
+echo find is a command that allows to search for files in a directory hierarchy
+find . -name "text_file*"
+find . -name "tExt_file*"
+find . -iname "tExt_file*"
+find -type d -name "text_file*"
+find -type f -name "text_file*"
+find -maxdepth 5 -type f -name "text_file*"
+find -type f -name "text_file*" -maxdepth 5
+find -maxdepth 5 -type f -perm 777 -name "text_file*"
+find -maxdepth 5 -type f ! -perm 777 -name "text_file*"
+find -maxdepth 1 -empty
+find -maxdepth 1 -not -empty
+find -maxdepth 1 -! -empty
+find ./Data -size +10M
+find -maxdepth 2 -size -1k
+find . -mmin 60
+find . -mmin -6060
+find . -mmin -60
+find . -maxdepth 1 -mtime -1
+find . -maxdepth 1 -mtime -1 -! -name ".*"
+echo If we want to execute a command after finding a file, run -exec or -ok
+echo After the command, it is needed to write "{} \;"
+echo All occurences of {} are replaced by the file name
+echo ";" is prefixed with a slash to prevent the shell from interpreting it
+find -maxdepth 5 -type f -name "text_file*" -exec ls -l {} \;
+find -maxdepth 5 -type f -name "text_file*" -ok ls -l {} \;
+find -maxdepth 5 -type f -name "text_file*" -exec echo "FOUND IT find -maxdepth 5 -type f -name "text_file*" -ok ls -l {} \;find -maxdepth 5 -type f -name "text_file*" -ok ls -l {} \;" \;
+find -maxdepth 5 -type f -name "text_file*" -exec echo "FOUND IT" \;
+find -maxdepth 5 -type f -name "text_file*" -exec ls -l {} \; -exec head -2 {} \;
+cd Downloads
+okular
+okular Master_class_04v5.pdf&
+okular Master_class_03v5.pdf &
+echo uniq reports or omits repeated adjacent lines
+seq 1 2 10 > uniq_example.txt
+sec 1 10 >> uniq_example.txt
+seq 1 10 >> uniq_example.txt
+cat uniq_example.txt
+cat uniq_example.txt | uniq
+echo uniq, when there is nothing next to it, works as "cat"
+sort uniq_example.txt | uniq
+echo uniq does not detect repeated lines unless they are adjacent
+sort uniq_example.txt |uniq -d
+sort uniq_example.txt |uniq -c
+ls Downloads
+echo The sort command sorts lines of text files
+sort -n uniq_example.txt
+sort -n -r uniq_example.txt
+sort -n uniq_example.txt uniq_example.txt
+sort -n -u uniq_example.txt
+echo As we can see -u option in sort makes the same work as uniq -d, but with sort we cannot count the duplicates
+echo If we want to select just some fields to order the file, we need to use the option -k
+sort -t "^" -k 6r optd_aircraft.csv |head
+sort -t "^" -k 6r,6 optd_aircraft.csv |head
+sort -t "^" --key=6r,6 optd_aircraft.csv |head
+sort -t "^" -k 2,2 -u  optd_aircraft.csv |head
+sort -t "^" -k 2 -u  optd_aircraft.csv |head
+cd ~
+echo Exercises: sorting and counting
+tree -L2
+tree -L 2
+find -type f -size -exec ls -sS
+find -type f -size +20M -exec ls -sS
+cat ./.history | less
+ls -s
+ls -sl
+ls -R
+ls -Rls 
+find -type f -size +100M -exec ls -l {} ;\
+find -type f -size +100M -exec ls -l {} ;/
+find -type f -size +100M -exec ls -l {} /;
+find -type f -size +100M -exec ls -l {} \;
+find -type f -size +10M -exec ls -l {} \;
+find -type f -size +10M -exec ls -lSs {} \;
+find -type f -size +10M -exec ls -lSs {} \; | sort -k1n,1 | head -n 10
+seq 15 > 20lines.txt
+seq 9 1 20 >> 20lines.txt
+echo "20\n20"
+echo "20\n20" >> 20lines.txt
+sort -d 20lines.txt
+sort -n -u Textfile.txt
+sort -n -u 20lines.txt
+uniq -c 20lines.txt
+uniq -d 20lines.txt
+seq 9 1 20
+sort -n 20lines.txt | uniq -c 
+sort -n 20lines.txt | uniq 
+sort -n 20lines.txt | uniq -d
+sort -n 20lines.txt | uniq -c | sort -k 1n,1 |head 1
+sort -n 20lines.txt | uniq -c | sort -k 1n,1 |head -n 1
+sort -n 20lines.txt | uniq -c | sort -k 1nr,1 |head -n 1
+sort -n 20lines.txt | uniq -c | sort -k 1n,1
+seq 0 2 40 > 20lines2.txt
+cat 20lines.txt 20lines2.txt | sort -n -u > 20lines_nodup.txt
+cat 20lines_nodup.txt
+head ~/Data/opentraveldata
+head ~/Data/opentraveldata/optd_aircraft.csv
+head -n -1 
+sort -k 7nr,7 ~/Data/opentraveldata/optd_aircraft.csv |head -n 1
+echo Processing and filtering commands
+echo The command cut slices lines
+cut -d "^" -f 1-3,5 ~/Data/opentraveldata/optd_aircraft.csv | head
+cut -d "^" -f 1-3,5 --output-delimiter "," ~/Data/opentraveldata/optd_aircraft.csv | head
+cut -d "^" -f 1-3,5 --output-delimiter "OMG" ~/Data/opentraveldata/optd_aircraft.csv | head
+cut -d "^" -f 1-3,5 --output-delimiter "OMG" ~/Data/opentraveldata/optd_aircraft.csv | cut -d "OMG"-f 2 | head
+cut -d "^" -f 1-3,5 --output-delimiter "OMG" ~/Data/opentraveldata/optd_aircraft.csv | cut -d "OMG" -f 2 | head
+echo The command paste concatenates horizontally and merges lines of files in parallel
+seq 10 | paste
+seq 10 | paste -s
+seq 10 | paste -s -d "^"
+seq 10 | paste -s -d "A B C"
+seq 10 | paste ---
+seq 10 | paste - - -
+seq 10 | paste - - - -d "ABC"
+cd Data/shell
+paste Text_example.txt Text_example.txt
+seq 1 10 > numbers; paste numbers Text_example.txt
+paste < numbers Text_example.txt
+head < numbers Text_example.txt
+paste < numbers < Text_example.txt
+paste <(cat numbers) <(cat Text_example.txt )
+paste <(seq 10) <(seq 15)
+echo tr allows to translate or delete characters
+echo "master data science" | tr a A
+echo "master data science" | tr sa AB
+echo "master     data       science" |tr -s " " "^"
+echo "mmaster     daaaaaaaata       science" |tr -s "ma" "ma "
+echo "master data science" | tr -d sa
+echo master data science  | tr -cd sa
+echo We can use it with predefined classes of characters
+echo "mmaster      daaaaata science! | tr -s "[:blank]" 
+echo "mmaster      daaaaata science" | tr -s "[:blank]" 
+echo "mmaster      daaaaata science" | tr -s "[:blank:]"  
+echo "mmaster      daaaaata science" | tr -s "[:blank:]" | tr -s "[:alnum:]" 
+echo "master 123 data 124 science 1" | tr -cd "[:digit:]"
+echo "master 123 data 124 science 1" | tr -cd "[:alpha:]"
+okular Downloads/Master_class_03v5.pdf&
+echo Exercises of Processing and Filtering
+cd Data/opentraveldata
+cut -d "^" --output-delimiter="," | head
+cut -d "^" --output-delimiter=","  optd_aircraft.csv| head
+cut -d "^" --output-delimiter= ","  optd_aircraft.csv| head
+cut --help
+cut -d "^"  optd_aircraft.csv| head
+head optd_aircraft.csv
+cut -d "^" -f 1-8 | head
+cut -d "^" -f 1-8 --output-delimiter="," | head
+cut -d "^" -f 1-8 --output-delimiter="," optd_aircraft.csv | head
+head optd_por_public.csv
+head -n 3 optd_por_public.csv
+tr --help
+cat optd_por_pub
+cat optd_por_public.csv| tr -d -c "  "
+cat optd_por_public.csv| tr -d -c "  " |wc
+head -n 1 optd_por_public.csv
+head -n 1 optd_por_public.csv | paste -d "^"
+head -n 1 optd_por_public.csv | paste -d "^" -
+head -n 1 optd_por_public.csv | tr "^" "\n" | wc -l
+echo In cut, we can slice lines. We need to display the delimeter with -d and the fields to choose with -f. --output-delimeter=STRING allows to put another delimiter
+cut -d "^" -f 1-3,5 optd_aircraft.csv| head
+cut -d "^" -f 1-3,5 --output-delimiter "," optd_aircraft.csv | head
+cut -d "^" -f 1-
+cut -d "^" -f 1-3,5 --output-delimeter "OMG" optd_aircraft.csv | cut -d "OMG" -f 2 | head
+echo paste command concatenates horizontally and merges lines of files in parallel
+seq 10
+seq 10 |paste
+echo paste without any arguments, is the same as cat
+seq 10 |paste -s
+echo argument -s concatenates horizontally
+seq 10 |paste -s -d "^"
+echo argument -d allows to make a different delimeter
+seq 10 |paste -s -d " A B C"
+seq 10 |paste - - -
+echo The "-" gives the num of columns required in the output
+echo The option < takes the stdin from file and <() takes stdinf fro the evaluation of the expression within the parenthesis
+echo The option "<" takes the stdin from file and <() takes stdinf fro the evaluation of the expression within the parenthesis
+echo The option "<" takes the stdin from file and "<()" takes stdin from the evaluation of the expression within the parenthesis
+paste ~/Data/shell
+paste ~/Data/shell/Text_example.txt ~/Data/shell/Text_example.txt
+echo Lets go back to the exercises
+paste <seq 46 <(head -n 1 optd_por_public.csv | tr "^" "\n")
+paste <(seq 46) <(head -n 1 optd_por_public.csv | tr "^" "\n")
+head -n 1 optd_airlines.csv | tr "^" "\n"| wc -l
+paste <(seq 14) <(head -n 1 optd_por_public.csv | tr "^" "\n")
+head -n 2
+head -n 2 optd_airlines.csv
+cut -d "^" -f 8,14 | sort -k 2n,2
+cut -d "^" -f 8,14 optd_airlines.csv| sort -k 2n,2
+cut -d "^" -f 8,14 optd_airlines.csv| sort -k 2n,2 | head -n 1
+cut -d "^" -f 8,14 optd_airlines.csv| sort -t "^" -k 2n,2 | head -n 1
+cut -d "^" -f 8,14 optd_airlines.csv| sort -t "^" -k 2n,2
+cut -d "^" -f 8,14 optd_airlines.csv| sort -t "^" -k 2nr,2 | head -n 1
+paste -d "^" -f 8,10 optd_airlines.csv | sort -d 
+cut -d "^" -f 8,10 optd_airlines.csv | sort -d 
+echo Now we will lear the command grep
+echo grep is usefull to print lines matching a pattern
+cd ../shell
+grep this Text_example.txt
+echo The general syntax is grep+STRING TO MATCH+file
+echo We can use the option -v to select the non-matching lines
+grep -v this Text_example.txt
+echo We can use -i to be case unsensitive and -n to prefix each line with its line-number
+grep -in "this" Text_example.txt
+echo -c is used to print the count of matching lines
+grep -c this Text_example.txt Text_example.txt
+grep -c this Text_example.txt
+grep -cv this Text_example.txt
+echo -w allows us to select only those lines containing matches that form whole words
+grep -n line Text_example.txt
+grep -nw line Text_example.txt
+grep -nB 1 line Text_example.txt
+grep -nA 1 line Text_example.txt
+grep -nA 2 line Text_example.txt
+echo -E enable regular expressions, -o shows just the pattern matched and -b shows the byte offset in the whole file
+grep -n -i -E "^T" Text_example.txt
+grep -n -i -o -E "^T" Text_example.txt
+grep -n -i -o -b -E "^T" Text_example.txt
+seq 5 5 20
+seq 5 5 20| grep "[1-5]{2}"
+seq 5 5 200| grep -E "[1-5]{2}"
+seq 5 5 20| grep -E "[1-5]{2}"
+seq 5 5 200| grep -w -E "[1-5]{2}"
+echo grep exercises
+cd ../opentraveldata
+grep "7*7" optd_aircraft.csv
+paste <(seq 46) <(head -n 1 optd_aircraft.csv | tr "^" "\n")
+paste <(seq 8) <(head -n 1 optd_aircraft.csv | tr "^" "\n")
+cut -d "^" -f 3 optd_aircraft.csv | grep "^7" "$7" 
+cut -d "^" -f 3 optd_aircraft.csv | grep "^7"
+cut -d "^" -f 3 optd_aircraft.csv | grep -E "^7$7"
+cut -d "^" -f 3 optd_aircraft.csv | grep -E "^7|$7"
+cut -d "^" -f 3 optd_aircraft.csv | grep -E "7*7"
+cut -d "^" -f 3 optd_aircraft.csv | grep -E "3*+"
+cut -d "^" -f 3 optd_aircraft.csv | grep -E "^3**"
+cut -d "^" -f 3 optd_aircraft.csv | grep -E "^3"
+cut -d "^" -f 3 optd_aircraft.csv | grep -E "^7"
+cut -d "^" -f 3 optd_aircraft.csv | grep -E "^7" | grep -E "$7"
+cut -d "^" -f 3 optd_airlines.csv | grep -c -E "^aero"
+paste <(seq 14) <(head -n 1 optd_airlines.csv | tr "^" "\n")
+cut -d "^" -f 8 optd_airlines.csv | grep -c -E "^aero"
+cut -d "^" -f 8 optd_airlines.csv | head
+cut -d "^" -f 8 optd_airlines.csv | grep -c -i -E "^aero"
+echo 3
+head -n 1 optd_por_public.csv| tr "^" "\n" |wc -l
+head -n 1 optd_por_public.csv| tr "^" "\n" |grep -i -c "name"
+head -n 1 optd_por_public.csv| tr "^" "\n" |grep -i -n "name"
+echo 4
+grep -iRl "Science" /
+echo Command sed stands for stream editor for filtering and transforming text
+echo Sunday | ssdaysnights
+echo Sunday | sed ssdaysnights
+echo Sunday | sed 's/day/night/'
+echo s is the substitute command. After this subtitute command we define a delimeter
+echo sed is line oriented. -g gives global replacements, -l makes it case insensitive and -i edit files in place
+echo day.day
+echo day.day | sed 's.day.night.'
+cd shell
+cp Text_example.txt Text_4sed.txt
+sed -i "s/this/THAT/gl" Text_4sed.txt
+sed -i "s,this,THAT,gl" Text_4sed.txt
+sed -i "ssthissTHATsgl" Text_4sed.txt
+sed "ssthissTHATsgl" Text_4sed.txt
+sed -e 's/this/THAT/gl' Text_4sed.txt
+sed -i 's/this/THAT/gl' Text_4sed.txt
+sed 's/this/THAT/gl' Text_example.txt
+sed -n 's/this/THAT/gl' Text_example.txt
+sed -n 's*this*THAT' Text_example.txt
+sed 's*this*THAT*gl' Text_example.txt
+sed -n 's*this*THAT*gl' Text_example.txt
+sed -n 's*this*THAT*' Text_example.txt
+sed 's*this*THAT*gl*' Text_example.txt
+sed 's*this*THAT*' Text_4sed.txt
+sed -i 's*this*THAT*' Text_4sed.txt
+sed 's*this*THAT/gl' Text_example.txt
+sed 's*this*THAT/gl*' Text_example.txt
+sed 's*this*THAT*gl*' Text_4sed.txt
+sed 's*this*THAT*/gl' Text_4sed.txt
+sed 's*this*THAT*gl' Text_4sed.txt
+sed 's/this/THAT/*' Text_example.txt
+sed 's/this/THAT/*' Text_4sed.txt
+sed 's/this/THAT/' Text_4sed.txt
+sed 's/this/THAT/gl' Text_4sed.txt
+sed 's/this/THAT/g' Text_4sed.txt
+sed 's/this/THAT/l' Text_4sed.txt
+sed 's/this/THAT/gi' Text_4sed.txt
+echo Also, with -p we can print a line, with n we supress automatic rinting. -! reverse the restriction and -d deletes the line
+seq 3 | sed '2p'
+seq 3 | sed -n '2p'
+seq 5 | sed -n '2,4p'
+seq 5 | sed -n '2,4!p'
+seq 5 | sed -n '2,4d'
+sed -i '3!d' Text_4sed.txt
+cut Text_4sed.txt
+cat Text_4sed.txt
+seq 5 | sed '/3/d'
+cat Text_example.txt
+rm Text_4sed.txt
+echo Exercises Processing and filtering
+echo 1
+cp Text_example.txt Text_example_x.txt
+sed "s/\n/"\n"/" Text_example_x.txt
+sed "s/\n/,/" Text_example_x.txt
+sed "s*\t*,*" Text_example_x.txt
+sed "s*\n*,*" Text_example_x.txt
+sed "s/\n/,/g" Text_example_x.txt
+sed "s/This/,/g" Text_example_x.txt
+sed "s/This/,/gi" Text_example_x.txt
+sed "s/"\n"/,/gi" Text_example_x.txt
+sed "s/"\t"/,/gi" Text_example_x.txt
+sed "s/\n/,/gi" Text_example_x.txt
+sed --help
+sed -z "s/\n/,/gi" Text_example_x.txt
+sed -z "s/\n/,/" Text_example_x.txt
+sed -z "s/\\n/,/" Text_example_x.txt
+sed -z "s/\\\n/,/" Text_example_x.txt
+sed -z "s/\\\\\n/,/" Text_example_x.txt
+sed -z "s/\\\\n/,/" Text_example_x.txt
+sed -z "s/\\n/\/" Text_example_x.txt
+sed -z "s/\\n/,/g" Text_example_x.txt
+sed -z "s/\\\n/,/g" Text_example_x.txt
+sed -z "s/\\\\n/,/g" Text_example_x.txt
+sed -z "s/\\\\\n/,/g" Text_example_x.txt
+sed -z "s/\n/,/g" Text_example_x.txt
+echo 2
+zip text_files Finn.txt Text_example.txt
+echo We are working now with zip tools
+unzip -l text_files.zip
+ls -l
+zipinfo text_files.zip
+zless text_files.zip
+zcat text_files.zip | less
+zgrep -n -H "line" text_files.zip
+unzip -c text_files.zip Text_example.txt |less
+
