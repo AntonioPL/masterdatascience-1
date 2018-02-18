@@ -1,5 +1,4 @@
 # masterdatascience
 
-Hola, estoy probando GitHub
+This is the GitHub with the exercises done in the Data Science Master degree
 
-Segunda edición
