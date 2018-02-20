@@ -224,8 +224,8 @@ round(dpois(1:120,lambda),4)*100
 
 set.seed(12345)
 SAMPLE <- sample.split(bank, SplitRatio = 0.75)
-sampleTrain <- subset(bank, SAMPLE=TRUE)
-sampleTest <- subset(bank, SAMPLE=FALSE)
+bankTrain <- subset(bank, SAMPLE=TRUE)
+bankTest <- subset(bank, SAMPLE=FALSE)
 
 ##### 17. Logistic regression training #####
 
@@ -235,6 +235,133 @@ summary(modelLogitFinal)
 ##### 18. Model evaluation #####
 
 
+bankTrain$prediccion=predict(modelLogitFinal,type="response")
+Predauxiliar= prediction(bankTrain$prediccion, bankTrain$y, label.ordering = NULL)
+auc.tmp = performance(Predauxiliar, "auc");
+aucModeloLogittrain = as.numeric(auc.tmp@y.values)
+aucModeloLogittrain
+
+ModelLogitTrain <- performance(Predauxiliar,"tpr","fpr")
+plot(ModelLogitTrain,colorize=TRUE)
+abline(a=0,b=1)
+
+GINItrain=2*aucModeloLogittrain-1
+
+bankTest$prediccion=predict(modelLogitFinal, newdata=bankTest,type="response")
+Predauxiliar = prediction(bankTest$prediccion, bankTest$y, label.ordering = NULL)
+auc.tmp = performance(Predauxiliar, "auc");
+aucModeloLogittest = as.numeric(auc.tmp@y.values)
+aucModeloLogittest
+
+CurvaRocModeloLogitTest <- performance(Predauxiliar,"tpr","fpr")
+plot(CurvaRocModeloLogitTest,colorize=TRUE)
+abline(a=0,b=1)
+
+## GINI Index
+GINItest=2*aucModeloLogittest-1
+
+## Model cap
+mean(as.numeric(bankTest$y)-1)
+aggregate(bankTest$prediccion~bankTest$y,FUN=mean)
+
+## -------------------------------------------------------------------------
+
+##### 19. Model implementation: Threshold #####
+
+ALPHA=0.5
+TP <- sum(bankTest$y=='yes' & bankTest$prediccion>=ALPHA)
+TN <- sum(bankTest$y=='no' & bankTest$prediccion<ALPHA)
+FP <- sum(bankTest$y=='no' & bankTest$prediccion>=ALPHA)
+FN <- sum(bankTest$y=='yes' & bankTest$prediccion<ALPHA)
+confusionMatrix <- table(bankTest$y,bankTest$prediccion>=ALPHA)
+accuracyTest <- (TP+TN)/length(bankTest$y)
+precisionTest <- TP/(TP+FP)
+recallTest <- TP/(TP+FN)
+confusionMatrix
+accuracyTest
+precisionTest
+recallTest
+
+ALPHA=0.2
+TP <- sum(bankTest$y=='yes' & bankTest$prediccion>=ALPHA)
+TN <- sum(bankTest$y=='no' & bankTest$prediccion<ALPHA)
+FP <- sum(bankTest$y=='no' & bankTest$prediccion>=ALPHA)
+FN <- sum(bankTest$y=='yes' & bankTest$prediccion<ALPHA)
+confusionMatrix <- table(bankTest$y,bankTest$prediccion>=ALPHA)
+accuracyTest <- (TP+TN)/length(bankTest$y)
+precisionTest <- TP/(TP+FP)
+recallTest <- TP/(TP+FN)
+confusionMatrix
+accuracyTest
+precisionTest
+recallTest
+
+
+ALPHA=0.8
+TP <- sum(bankTest$y=='yes' & bankTest$prediccion>=ALPHA)
+TN <- sum(bankTest$y=='no' & bankTest$prediccion<ALPHA)
+FP <- sum(bankTest$y=='no' & bankTest$prediccion>=ALPHA)
+FN <- sum(bankTest$y=='yes' & bankTest$prediccion<ALPHA)
+confusionMatrix <- table(bankTest$y,bankTest$prediccion>=ALPHA)
+accuracyTest <- (TP+TN)/length(bankTest$y)
+precisionTest <- TP/(TP+FP)
+recallTest <- TP/(TP+FN)
+confusionMatrix
+accuracyTest
+precisionTest
+recallTest
+
+## -------------------------------------------------------------------------
+
+##### 19. Model implementation: KS test #####
+
+bankKS=bankTest[order(bankTest$prediccion, decreasing=TRUE),c("y","prediccion")]
+bankKS$N=1:length(bankKS$y)
+bankKS$EXITOSACUM=cumsum(as.numeric(bankKS$y)-1)
+bankKS$FRACASOSACUM=bankKS$N-bankKS$EXITOSACUM
+bankKS$EXITOSTOT=sum(bankKS$y=="yes")
+bankKS$FRACASOSTOT=sum(bankKS$y=="no")
+bankKS$TOTAL=bankKS$EXITOSTOT+bankKS$FRACASOSTOT
+bankKS$TPR=bankKS$EXITOSACUM/bankKS$EXITOSTOT
+bankKS$FPR=bankKS$FRACASOSACUM/bankKS$FRACASOSTOT
+bankKS$DIFF=bankKS$TPR-bankKS$FPR
+plot(bankKS$DIFF)
+max(bankKS$DIFF)
+which(bankKS$DIFF==max(bankKS$DIFF))
+bankKS[2125,]
+
+plot(bankKS$prediccion*1000,1-bankKS$TPR,xlab="SCORE",ylab="Porcentaje acumulado",main="Distribuciones por Score (rojo malos, azul buenos)",type="l",col="blue")
+lines(bankKS$prediccion*1000,1-bankKS$FPR,col="red")
+
+## -------------------------------------------------------------------------
+
+##### 19. Model implementation: F1 Score #####
+
+bankKS$Accuracy=(bankKS$EXITOSACUM+bankKS$FRACASOSTOT-bankKS$FRACASOSACUM)/bankKS$TOTAL
+bankKS$Precision=bankKS$EXITOSACUM/bankKS$N
+bankKS$Cobertura=bankKS$EXITOSACUM/bankKS$EXITOSTOT
+bankKS$F1Score=2*(bankKS$Precision*bankKS$Cobertura)/(bankKS$Precision+bankKS$Cobertura)
+plot(bankKS$F1Score)
+max(bankKS$F1Score)
+which(bankKS$F1Score==max(bankKS$F1Score))
+bankKS[1378,]
+
+ALPHAS=seq(0,1,0.05)
+Accuracy=c()
+Precision=c()
+Cobertura=c()
+F1Score=c()
+for (i in 1:length(ALPHAS)){
+  ALPHA=ALPHAS[i]
+  Confusion=table(bankKS$y,bankKS$prediccion>=ALPHA)
+  Accuracy=c(Accuracy,(sum(bankKS$y=="yes" & bankKS$prediccion>=ALPHA)+sum(bankKS$y=="no" & bankKS$prediccion<ALPHA))/length(bankKS$y))
+  Precision=c(Precision,sum(bankKS$y=="yes" & bankKS$prediccion>=ALPHA)/sum(bankKS$prediccion>=ALPHA))
+  Cobertura=c(Cobertura,sum(bankKS$y=="yes" & bankKS$prediccion>=ALPHA)/sum(bankKS$y=="yes"))
+}
+F1Score=2*(Precision*Cobertura)/(Precision+Cobertura)
+DFF1=data.frame(ALPHAS,Accuracy,Precision,Cobertura,F1Score)
+
+DFF1
 
 
 
